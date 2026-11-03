@@ -32,7 +32,7 @@ const INVITEES = [
   { id: "guest_0xbdd", name: "Mr. Sameera Dananjaya" },
   { id: "guest_0xbde", name: "Mr. Pasindu Kodippili" },
   { id: "guest_0xbdf", name: "Mr. Aditha Rajakaruna" },
-  { id: "guest_0xbea", name: "Mr. Ashan Thirimanne" },
+  { id: "guest_0xbea", name: "Mr. & Mrs. Ashan Thirimanne" },
   { id: "guest_0xbeb", name: "Mr. Lakshitha Madushan" },
   { id: "guest_0xbec", name: "Mr. Thimila Ranaweera" },
   { id: "guest_0xbed", name: "Miss. Manodya Dimanthi" },
@@ -59,7 +59,7 @@ const INVITEES = [
   { id: "guest_0xcca", name: "Mr. Amila Gunawickrama" },
   { id: "guest_0xccb", name: "Mr. Sahan Peris" },
   { id: "guest_0xccc", name: "Mr. Malith Mavinda" },
-  { id: "guest_0xccd", name: "Mr. Thimira Keerthisena" },
+  { id: "guest_0xccd", name: "Mr. & Mrs. Thimira Keerthisena" },
   { id: "guest_0xcce", name: "Mr. Hasitha Madushan" },
   { id: "guest_0xccf", name: "Mr. Dhanuka Sankalpa" },
   { id: "guest_0xcda", name: "Mr. Santhushta Kariyawasam" },
@@ -141,6 +141,10 @@ const INVITEES = [
   { id: "guest_0xede", name: "Mr. & Mrs. Bandu & Family" },
   { id: "guest_0xedf", name: "Mrs. Niluka & Family" },
   { id: "guest_0xeea", name: "Mr. & Mrs. Susith Rodrigo" },
+  { id: "guest_0xeed", name: "Mr. Pabasara piyumanga" },
+  { id: "guest_0xeee", name: "Dr. Tharani Adhikari and Mr. Ishara Tharanga" },
+  { id: "guest_0xdfd", name: "Lahiru Priyadarshana" },
+  { id: "guest_0xeec", name: "Ajith Kumara" },
 ];
 
 const HEADERS = [

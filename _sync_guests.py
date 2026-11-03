@@ -101,6 +101,9 @@ def parse_table(raw: str):
         return "C"
     if code in {"R", "R1", "R2"}:
         return "R"
+    # Invited but not attending — no seating table
+    if code in {"NA", "N/A", "NOT", "NO", "INVITE"}:
+        return "NA"
     u = re.match(r"^U(\d+)$", code)
     if u:
         return u.group(1)
@@ -138,17 +141,21 @@ def section_label(table):
         return "Couple"
     if table == "R":
         return "Reserved"
+    if table == "NA":
+        return "Not attending but invite"
     return f"Table {table}"
 
 
 def table_group_key(table):
-    """Sort groups: Couple, Reserved, numbered tables, then Unassigned last."""
+    """Sort groups: Couple, Reserved, numbered tables, Unassigned, then NA last."""
     if table == "C":
         return (0, 0)
     if table == "R":
         return (1, 0)
     if table is None:
         return (9, 0)
+    if table == "NA":
+        return (10, 0)
     try:
         return (2, int(table))
     except (TypeError, ValueError):
@@ -235,7 +242,7 @@ codes_path.write_text(
 # Rewrite guests-test.txt: numbered + section banners (Unassigned = no table yet)
 out_lines = [
     "# Format: 1. Guest Name | TableCode",
-    "# Codes: C = Couple, R = Reserved, 1–18 = guest tables",
+    "# Codes: C = Couple, R = Reserved, 1–18 = guest tables, NA = Not attending but invite",
     "# No table yet: omit | or use | _   (listed under Unassigned)",
     "# Save this file while watch-guests.py is running to auto-update guests.js",
     "",
@@ -256,7 +263,8 @@ for i, g in enumerate(guests, 1):
 
 guest_js_rows = []
 for g in guests:
-    table_js = "null" if g["table"] is None else f'"{g["table"]}"'
+    # NA = invite only, no seating table on the site
+    table_js = "null" if g["table"] in (None, "NA") else f'"{g["table"]}"'
     guest_js_rows.append(
         f'  {{ id: "{g["id"]}", code: "{g["code"]}", name: "{g["name"]}", table: {table_js} }}'
     )
@@ -302,7 +310,12 @@ for i, g in enumerate(guests, 1):
         link_lines.append(f"================== {section_label(g['table']).upper()} ==================")
         link_lines.append("")
         current_table = g["table"]
-    seat = f"Table {g['table']}" if g["table"] else "Table TBD"
+    if g["table"] == "NA":
+        seat = "Not attending but invite"
+    elif g["table"]:
+        seat = f"Table {g['table']}"
+    else:
+        seat = "Table TBD"
     link_lines.append(f"{i}. {g['name']}")
     link_lines.append(f"   Seat: {seat}")
     link_lines.append(f"   Code: {g['code']}")

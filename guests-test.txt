@@ -1,5 +1,5 @@
 # Format: 1. Guest Name | TableCode
-# Codes: C = Couple, R = Reserved, 1–18 = guest tables
+# Codes: C = Couple, R = Reserved, 1–18 = guest tables, NA = Not attending but invite
 # No table yet: omit | or use | _   (listed under Unassigned)
 # Save this file while watch-guests.py is running to auto-update guests.js
 
@@ -28,7 +28,7 @@
 
 ------------------ Table 4 ------------------
 18. Mr. Aditha Rajakaruna | 4
-19. Mr. Ashan Thirimanne | 4
+19. Mr. & Mrs. Ashan Thirimanne | 4
 20. Mr. Lakshitha Madushan | 4
 21. Mr. Thimila Ranaweera | 4
 22. Miss. Manodya Dimanthi | 4
@@ -59,7 +59,7 @@
 43. Mr. Amila Gunawickrama | 6
 44. Mr. Sahan Peris | 6
 45. Mr. Malith Mavinda | 6
-46. Mr. Thimira Keerthisena | 6
+46. Mr. & Mrs. Thimira Keerthisena | 6
 47. Mr. Hasitha Madushan | 6
 48. Mr. Dhanuka Sankalpa | 6
 49. Mr. Santhushta Kariyawasam | 6
@@ -141,5 +141,11 @@
 123. Dr. Madhuka Dasanayaka
 124. Mr. & Mrs. Chula Perera & Family
 125. Mr. & Mrs. Bandu & Family
-126. Mrs. Niluka & Family | 12
+126. Mrs. Niluka & Family
 127. Mr. & Mrs. Susith Rodrigo
+128. Mr. Pabasara piyumanga
+129. Dr. Tharani Adhikari and Mr. Ishara Tharanga
+
+------------------ Not attending but invite ------------------
+130. Lahiru Priyadarshana | NA
+131. Ajith Kumara | NA

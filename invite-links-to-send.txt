@@ -4,7 +4,7 @@ Offset n = 42  |  Example: ?guest_0xacf=udara-kavinda
 Check each link, then send the matching one to that guest.
 
 Base site: https://udara75.github.io/wedding/
-Total guests: 127
+Total guests: 131
 
 ================== COUPLE ==================
 
@@ -125,7 +125,7 @@ Total guests: 127
    Link: https://udara75.github.io/wedding/?guest_0xbdf=aditha-rajakaruna
    [ ] Checked   [ ] Sent
 
-19. Mr. Ashan Thirimanne
+19. Mr. & Mrs. Ashan Thirimanne
    Seat: Table 4
    Code: 0xbea
    Link: https://udara75.github.io/wedding/?guest_0xbea=ashan-thirimanne
@@ -293,7 +293,7 @@ Total guests: 127
    Link: https://udara75.github.io/wedding/?guest_0xccc=malith-mavinda
    [ ] Checked   [ ] Sent
 
-46. Mr. Thimira Keerthisena
+46. Mr. & Mrs. Thimira Keerthisena
    Seat: Table 6
    Code: 0xccd
    Link: https://udara75.github.io/wedding/?guest_0xccd=thimira-keerthisena
@@ -786,4 +786,31 @@ Total guests: 127
    Seat: Table TBD
    Code: 0xeea
    Link: https://udara75.github.io/wedding/?guest_0xeea=susith-rodrigo
+   [ ] Checked   [ ] Sent
+
+128. Mr. Pabasara piyumanga
+   Seat: Table TBD
+   Code: 0xeed
+   Link: https://udara75.github.io/wedding/?guest_0xeed=pabasara-piyumanga
+   [ ] Checked   [ ] Sent
+
+129. Dr. Tharani Adhikari and Mr. Ishara Tharanga
+   Seat: Table TBD
+   Code: 0xeee
+   Link: https://udara75.github.io/wedding/?guest_0xeee=tharani-adhikari-and-mr-ishara-tharanga
+   [ ] Checked   [ ] Sent
+
+
+================== NOT ATTENDING BUT INVITE ==================
+
+130. Lahiru Priyadarshana
+   Seat: Not attending but invite
+   Code: 0xdfd
+   Link: https://udara75.github.io/wedding/?guest_0xdfd=lahiru-priyadarshana
+   [ ] Checked   [ ] Sent
+
+131. Ajith Kumara
+   Seat: Not attending but invite
+   Code: 0xeec
+   Link: https://udara75.github.io/wedding/?guest_0xeec=ajith-kumara
    [ ] Checked   [ ] Sent
