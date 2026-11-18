@@ -145,6 +145,7 @@ const INVITEES = [
   { id: "guest_0xeee", name: "Dr. Tharani Adhikari and Mr. Ishara Tharanga" },
   { id: "guest_0xdfd", name: "Lahiru Priyadarshana" },
   { id: "guest_0xeec", name: "Ajith Kumara" },
+  { id: "guest_0xeef", name: "Mrs. Weranga Kaweesha" },
 ];
 
 const HEADERS = [

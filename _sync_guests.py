@@ -104,6 +104,9 @@ def parse_table(raw: str):
     # Invited but not attending — no seating table
     if code in {"NA", "N/A", "NOT", "NO", "INVITE"}:
         return "NA"
+    # Extra names kept at the very end (after NA) so earlier numbers stay fixed
+    if code in {"END", "MORE", "ADD", "EXTRA"}:
+        return "END"
     u = re.match(r"^U(\d+)$", code)
     if u:
         return u.group(1)
@@ -143,11 +146,13 @@ def section_label(table):
         return "Reserved"
     if table == "NA":
         return "Not attending but invite"
+    if table == "END":
+        return "Additional"
     return f"Table {table}"
 
 
 def table_group_key(table):
-    """Sort groups: Couple, Reserved, numbered tables, Unassigned, then NA last."""
+    """Sort groups: Couple, Reserved, numbered tables, Unassigned, NA, then Additional last."""
     if table == "C":
         return (0, 0)
     if table == "R":
@@ -156,6 +161,8 @@ def table_group_key(table):
         return (9, 0)
     if table == "NA":
         return (10, 0)
+    if table == "END":
+        return (11, 0)
     try:
         return (2, int(table))
     except (TypeError, ValueError):
@@ -242,7 +249,7 @@ codes_path.write_text(
 # Rewrite guests-test.txt: numbered + section banners (Unassigned = no table yet)
 out_lines = [
     "# Format: 1. Guest Name | TableCode",
-    "# Codes: C = Couple, R = Reserved, 1–18 = guest tables, NA = Not attending but invite",
+    "# Codes: C = Couple, R = Reserved, 1–18 = guest tables, NA = Not attending but invite, END = add at end",
     "# No table yet: omit | or use | _   (listed under Unassigned)",
     "# Save this file while watch-guests.py is running to auto-update guests.js",
     "",
@@ -263,8 +270,8 @@ for i, g in enumerate(guests, 1):
 
 guest_js_rows = []
 for g in guests:
-    # NA = invite only, no seating table on the site
-    table_js = "null" if g["table"] in (None, "NA") else f'"{g["table"]}"'
+    # NA / END = invite only, no seating table on the site
+    table_js = "null" if g["table"] in (None, "NA", "END") else f'"{g["table"]}"'
     guest_js_rows.append(
         f'  {{ id: "{g["id"]}", code: "{g["code"]}", name: "{g["name"]}", table: {table_js} }}'
     )
@@ -312,6 +319,8 @@ for i, g in enumerate(guests, 1):
         current_table = g["table"]
     if g["table"] == "NA":
         seat = "Not attending but invite"
+    elif g["table"] == "END":
+        seat = "Table TBD"
     elif g["table"]:
         seat = f"Table {g['table']}"
     else:

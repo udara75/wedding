@@ -4,7 +4,7 @@ Offset n = 42  |  Example: ?guest_0xacf=udara-kavinda
 Check each link, then send the matching one to that guest.
 
 Base site: https://udara75.github.io/wedding/
-Total guests: 131
+Total guests: 132
 
 ================== COUPLE ==================
 
@@ -813,4 +813,13 @@ Total guests: 131
    Seat: Not attending but invite
    Code: 0xeec
    Link: https://udara75.github.io/wedding/?guest_0xeec=ajith-kumara
+   [ ] Checked   [ ] Sent
+
+
+================== ADDITIONAL ==================
+
+132. Mrs. Weranga Kaweesha
+   Seat: Table TBD
+   Code: 0xeef
+   Link: https://udara75.github.io/wedding/?guest_0xeef=weranga-kaweesha
    [ ] Checked   [ ] Sent

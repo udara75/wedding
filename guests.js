@@ -137,6 +137,7 @@ const GUESTS = [
   { id: "tharani-adhikari-and-mr-ishara-tharanga", code: "0xeee", name: "Dr. Tharani Adhikari and Mr. Ishara Tharanga", table: null },
   { id: "lahiru-priyadarshana", code: "0xdfd", name: "Lahiru Priyadarshana", table: null },
   { id: "ajith-kumara", code: "0xeec", name: "Ajith Kumara", table: null },
+  { id: "weranga-kaweesha", code: "0xeef", name: "Mrs. Weranga Kaweesha", table: null },
 ];
 
 const TABLE_LABELS = ["C", "R", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"];

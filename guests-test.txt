@@ -1,5 +1,5 @@
 # Format: 1. Guest Name | TableCode
-# Codes: C = Couple, R = Reserved, 1–18 = guest tables, NA = Not attending but invite
+# Codes: C = Couple, R = Reserved, 1–18 = guest tables, NA = Not attending but invite, END = add at end
 # No table yet: omit | or use | _   (listed under Unassigned)
 # Save this file while watch-guests.py is running to auto-update guests.js
 
@@ -149,3 +149,6 @@
 ------------------ Not attending but invite ------------------
 130. Lahiru Priyadarshana | NA
 131. Ajith Kumara | NA
+
+------------------ Additional ------------------
+132. Mrs. Weranga Kaweesha | END
