@@ -272,9 +272,15 @@ guest_js_rows = []
 for g in guests:
     # NA / END = invite only, no seating table on the site
     table_js = "null" if g["table"] in (None, "NA", "END") else f'"{g["table"]}"'
-    guest_js_rows.append(
-        f'  {{ id: "{g["id"]}", code: "{g["code"]}", name: "{g["name"]}", table: {table_js} }}'
-    )
+    # Additional (END) guests get a later RSVP deadline
+    if g["table"] == "END":
+        guest_js_rows.append(
+            f'  {{ id: "{g["id"]}", code: "{g["code"]}", name: "{g["name"]}", table: {table_js}, rsvpBy: "November 30, 2026" }}'
+        )
+    else:
+        guest_js_rows.append(
+            f'  {{ id: "{g["id"]}", code: "{g["code"]}", name: "{g["name"]}", table: {table_js} }}'
+        )
 
 (root / "guests.js").write_text(
     f"""// Guest personalization — fixed letter-hex codes (a–f only, offset by n)

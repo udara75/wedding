@@ -163,6 +163,9 @@ function renderSeating(guest) {
   }
 }
 
+const DEFAULT_RSVP_BY = "November 20, 2026";
+const rsvpDeadlineDate = document.getElementById("rsvpDeadlineDate");
+
 function personalizeInvitation() {
   currentGuest = getGuestFromUrl();
   const displayName = currentGuest ? currentGuest.name : "Guest";
@@ -173,6 +176,11 @@ function personalizeInvitation() {
     document.title = `${currentGuest.name} — Udara & Shainy Wedding`;
     const nameInput = rsvpForm?.querySelector('input[name="name"]');
     if (nameInput && !nameInput.value) nameInput.value = currentGuest.name;
+  }
+
+  if (rsvpDeadlineDate) {
+    rsvpDeadlineDate.textContent =
+      (currentGuest && currentGuest.rsvpBy) || DEFAULT_RSVP_BY;
   }
 
   renderSeating(currentGuest);
