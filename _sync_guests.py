@@ -328,6 +328,7 @@ for i, g in enumerate(guests, 1):
     link_lines.append(f"{i}. {g['name']}")
     link_lines.append(f"   Seat: {seat}")
     link_lines.append(f"   Code: {g['code']}")
+    link_lines.append(f"   Slug: {g['id']}")
     link_lines.append(f"   Link: {site}?{g['token']}")
     link_lines.append(f"   [ ] Checked   [ ] Sent")
     link_lines.append("")

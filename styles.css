@@ -807,9 +807,9 @@ body {
   color: var(--lav-900);
 }
 
-/* —— Seating / table map —— */
+/* —— Seating / floor plan —— */
 .seating {
-  width: min(100%, 420px);
+  width: min(100%, 640px);
   text-align: center;
   padding: 0.5rem 0 1.5rem;
 }
@@ -835,7 +835,7 @@ body {
 }
 
 .seating-number {
-  margin: 0.55rem auto 0.25rem;
+  margin: 0.55rem auto 0.75rem;
   width: fit-content;
   min-width: 7.5rem;
   padding: 0.85rem 1.25rem;
@@ -848,6 +848,25 @@ body {
   font-weight: 600;
   letter-spacing: 0.04em;
   color: var(--lav-900);
+}
+
+.seating-plan {
+  margin: 0 auto 0.65rem;
+  width: 100%;
+  max-width: 640px;
+}
+
+.seating-plan[hidden] {
+  display: none;
+}
+
+.seating-plan img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(168, 127, 202, 0.28);
+  background: #f7f2fb;
 }
 
 .seating-note {

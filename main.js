@@ -10,6 +10,7 @@ const rsvpSuccess = document.getElementById("rsvpSuccess");
 const seatingSection = document.getElementById("seating");
 const seatingNumber = document.getElementById("seatingNumber");
 const seatingNote = document.getElementById("seatingNote");
+const seatingPlan = document.getElementById("seatingPlan");
 const weddingMusic = document.getElementById("weddingMusic");
 const musicToggle = document.getElementById("musicToggle");
 
@@ -56,11 +57,19 @@ function guestParam(guest) {
   return code ? `guest_${code}` : "";
 }
 
+function slugifyGuestValue(value) {
+  return normalizeGuestKey(value)
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function getGuestFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const guests = typeof GUESTS !== "undefined" ? GUESTS : [];
 
-  // Recommended: ?guest_0xacf=udara-kavinda  (letter-hex + name slug must both match)
+  // Format: ?guest_0xacf=<slug>
+  // Each hex code is unique (Dr. Weranga ≠ Mrs. Weranga).
   for (const [key, value] of params.entries()) {
     const keyMatch = String(key)
       .trim()
@@ -69,15 +78,18 @@ function getGuestFromUrl() {
     if (!keyMatch) continue;
 
     const code = normalizeHexCode(keyMatch[1]);
-    const slug = normalizeGuestKey(value)
-      .replace(/&/g, " and ")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
+    if (!code) continue;
 
-    const found = guests.find(
+    // 1) Prefer exact code + slug (safest)
+    const slug = slugifyGuestValue(value);
+    const exact = guests.find(
       (guest) => guestCode(guest) === code && guestId(guest) === slug
     );
-    if (found) return found;
+    if (exact) return exact;
+
+    // 2) Code alone — unique per guest (fixes truncated/wrong slug still showing "Guest")
+    const byCode = guests.find((guest) => guestCode(guest) === code);
+    if (byCode) return byCode;
   }
 
   return null;
@@ -122,6 +134,7 @@ function renderSeating(guest) {
   if (!table) {
     seatingSection.hidden = true;
     seatingSection.classList.remove("is-locked");
+    if (seatingPlan) seatingPlan.hidden = true;
     return;
   }
 
@@ -130,6 +143,7 @@ function renderSeating(guest) {
   // Date lock: only Udara & Shainy before Dec 1, 2026
   if (!canViewSeatingChart(guest)) {
     seatingSection.classList.add("is-locked");
+    if (seatingPlan) seatingPlan.hidden = true;
     if (seatingNumber) seatingNumber.textContent = "Coming soon";
     if (seatingNote) {
       seatingNote.textContent =
@@ -139,11 +153,12 @@ function renderSeating(guest) {
   }
 
   seatingSection.classList.remove("is-locked");
+  if (seatingPlan) seatingPlan.hidden = false;
   if (seatingNumber) seatingNumber.textContent = tableDisplayName(table);
   if (seatingNote) {
     seatingNote.textContent =
       table === "C"
-        ? "You are seated at the couple's table."
+        ? "You are seated at the couple's table — see the head table on the plan."
         : `Please join us at ${tableDisplayName(table)}.`;
   }
 }
