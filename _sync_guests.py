@@ -1,18 +1,16 @@
-"""Sync guests-test.txt → guests.js + invite-links-test.txt (+ Apps Script list)
+"""Sync guests-test.txt → guests.js + invite-links (+ Apps Script list)
 
-Source format (any of these):
+Source format:
   1. Mr. Udara Kavinda | C
-  Mr. New Guest
-  53. Mr. New Guest | _
+  53. Mr. New Guest
+  132. Mrs. Weranga Kaweesha | END
+  51. Mr. Aruna Edirimanne | END:6
 
-No table yet → leave blank or use _  (goes under Unassigned)
+Codes: C / R / 1–18 / NA (not attending) / END (additional, RSVP Nov 30)
+       END:6 = additional + seated at table 6
 
-Each guest gets a FIXED hex id made of hex *letters* a–f only (e.g. 0xacf),
-built from slot + HEX_OFFSET_N. Saved in guest-codes.json — never changes
-on later syncs. New guests take the next free slot.
-
-Public links (recommended):
-  ?guest_0xacf=udara-kavinda
+FIXED list numbers: saved in guest-numbers.json — never renumber existing guests.
+FIXED hex codes: saved in guest-codes.json — never change existing invite links.
 """
 import json
 import re
@@ -21,18 +19,16 @@ from pathlib import Path
 root = Path(__file__).resolve().parent
 site = "https://udara75.github.io/wedding/"
 codes_path = root / "guest-codes.json"
+numbers_path = root / "guest-numbers.json"
 
-# Shift amount "n" — change this to move the whole letter-hex series.
-# Codes use only a–f (no 0–9 digits).
 HEX_OFFSET_N = 42
 HEX_LETTERS = "abcdef"
-HEX_LETTER_BASE = len(HEX_LETTERS)  # 6
+HEX_LETTER_BASE = len(HEX_LETTERS)
 HEX_LETTER_LEN = 3
-HEX_LETTER_CAPACITY = HEX_LETTER_BASE**HEX_LETTER_LEN  # 216
+HEX_LETTER_CAPACITY = HEX_LETTER_BASE**HEX_LETTER_LEN
 
 
 def letter_hex_from_slot(slot: int) -> str:
-    """Map slot index → 0x*** using only hex letters, after HEX_OFFSET_N."""
     n = slot + HEX_OFFSET_N
     if n < 0 or n >= HEX_LETTER_CAPACITY:
         raise ValueError(f"slot {slot} with offset {HEX_OFFSET_N} out of range")
@@ -44,7 +40,6 @@ def letter_hex_from_slot(slot: int) -> str:
 
 
 def normalize_hex_code(raw):
-    """Return fixed letter-hex form 0x[a-f]{3}, or None if invalid."""
     if raw is None:
         return None
     s = str(raw).strip().lower()
@@ -55,7 +50,6 @@ def normalize_hex_code(raw):
 
 
 def slot_from_letter_hex(code):
-    """Inverse of letter_hex_from_slot (without offset), or None."""
     norm = normalize_hex_code(code)
     if not norm:
         return None
@@ -91,26 +85,35 @@ def to_id(n: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", n).strip("-")
 
 
-def parse_table(raw: str):
+def parse_assignment(raw: str):
+    """Return (section, seat). END:6 = Additional + Table 6."""
     raw = (raw or "").strip()
     raw = re.sub(r"(?i)^table\s*", "", raw).strip()
     if not raw or raw in {"_", "-", "?", "tbd", "none", "null"}:
-        return None
-    code = raw.upper()
-    if code in {"C", "S", "COUPLE"}:
-        return "C"
-    if code in {"R", "R1", "R2"}:
-        return "R"
-    # Invited but not attending — no seating table
-    if code in {"NA", "N/A", "NOT", "NO", "INVITE"}:
-        return "NA"
-    # Extra names kept at the very end (after NA) so earlier numbers stay fixed
+        return None, None
+    code = re.sub(r"\s+", "", raw.upper())
+
+    end_seat = re.fullmatch(r"(END|MORE|ADD|EXTRA)[:\-](\d+|[CR]|COUPLE)", code)
+    if end_seat:
+        seat = end_seat.group(2)
+        if seat in {"C", "S", "COUPLE"}:
+            seat = "C"
+        elif seat in {"R", "R1", "R2"}:
+            seat = "R"
+        return "END", seat
+
     if code in {"END", "MORE", "ADD", "EXTRA"}:
-        return "END"
+        return "END", None
+    if code in {"NA", "N/A", "NOT", "NO", "INVITE"}:
+        return "NA", None
+    if code in {"C", "S", "COUPLE"}:
+        return "C", "C"
+    if code in {"R", "R1", "R2"}:
+        return "R", "R"
     u = re.match(r"^U(\d+)$", code)
     if u:
-        return u.group(1)
-    return code
+        return u.group(1), u.group(1)
+    return code, code
 
 
 def is_separator(line: str) -> bool:
@@ -122,51 +125,69 @@ def parse_line(line: str):
     if not line or line.startswith("#") or is_separator(line):
         return None
 
-    table = None
+    section, seat = None, None
     if "|" in line:
         name_part, table_part = line.split("|", 1)
-        table = parse_table(table_part)
+        section, seat = parse_assignment(table_part)
         name_part = name_part.strip()
     else:
         name_part = line
 
-    name_part = re.sub(r"^\d+\.\s*", "", name_part).strip()
+    file_num = None
+    num_match = re.match(r"^(\d+)\.\s*(.*)$", name_part)
+    if num_match:
+        file_num = int(num_match.group(1))
+        name_part = num_match.group(2).strip()
+    else:
+        name_part = re.sub(r"^\d+\.\s*", "", name_part).strip()
+
     if not name_part:
         return None
 
-    return fix_title(name_part), table
+    return fix_title(name_part), section, seat, file_num
 
 
-def section_label(table):
-    if table is None:
+def section_label(section):
+    if section is None:
         return "Unassigned"
-    if table == "C":
+    if section == "C":
         return "Couple"
-    if table == "R":
+    if section == "R":
         return "Reserved"
-    if table == "NA":
+    if section == "NA":
         return "Not attending but invite"
-    if table == "END":
+    if section == "END":
         return "Additional"
-    return f"Table {table}"
+    return f"Table {section}"
 
 
-def table_group_key(table):
-    """Sort groups: Couple, Reserved, numbered tables, Unassigned, NA, then Additional last."""
-    if table == "C":
+def table_group_key(section):
+    if section == "C":
         return (0, 0)
-    if table == "R":
+    if section == "R":
         return (1, 0)
-    if table is None:
+    if section is None:
         return (9, 0)
-    if table == "NA":
+    if section == "NA":
         return (10, 0)
-    if table == "END":
+    if section == "END":
         return (11, 0)
     try:
-        return (2, int(table))
+        return (2, int(section))
     except (TypeError, ValueError):
-        return (3, str(table))
+        return (3, str(section))
+
+
+def file_table_tag(section, seat):
+    if section == "END" and seat:
+        return f"END:{seat}"
+    if section == "END":
+        return "END"
+    if section == "NA":
+        return "NA"
+    if section is None:
+        return None
+    return section
 
 
 lines = (root / "guests-test.txt").read_text(encoding="utf-8").splitlines()
@@ -177,9 +198,8 @@ for i, line in enumerate(lines):
     parsed = parse_line(line)
     if not parsed:
         continue
-    name, table = parsed
+    name, section, seat, file_num = parsed
     name_key = re.sub(r"\s+", " ", name).strip().lower()
-    # Skip accidental duplicate paste of the same person
     if name_key in seen_names:
         continue
     seen_names.add(name_key)
@@ -190,14 +210,71 @@ for i, line in enumerate(lines):
     if gid in seen_ids:
         gid = f"{gid}-{i + 1}"
     seen_ids[gid] = True
-    guests.append({"id": gid, "name": name, "table": table})
+    guests.append(
+        {
+            "id": gid,
+            "name": name,
+            "section": section,
+            "seat": seat,
+            "file_num": file_num,
+        }
+    )
 
-# Keep relative order within each table group; order groups sensibly
+# Sort by section group, keep relative order within group
 indexed = list(enumerate(guests))
-indexed.sort(key=lambda it: (*table_group_key(it[1]["table"]), it[0]))
+indexed.sort(key=lambda it: (*table_group_key(it[1]["section"]), it[0]))
 guests = [g for _, g in indexed]
 
-# FIXED letter-hex codes (a–f only), offset by HEX_OFFSET_N — reuse forever
+# FIXED list numbers — never renumber existing guests
+saved_numbers = {}
+if numbers_path.exists():
+    try:
+        raw_nums = json.loads(numbers_path.read_text(encoding="utf-8"))
+        saved_numbers = {k: int(v) for k, v in raw_nums.items()}
+    except (json.JSONDecodeError, TypeError, ValueError):
+        saved_numbers = {}
+
+used_numbers = set(saved_numbers.values())
+# Seed from file prefixes for anyone not saved yet (first run / recovery)
+for g in guests:
+    if g["id"] in saved_numbers:
+        continue
+    n = g.get("file_num")
+    if n is not None and n not in used_numbers:
+        saved_numbers[g["id"]] = n
+        used_numbers.add(n)
+
+next_num = max(used_numbers) + 1 if used_numbers else 1
+
+
+def alloc_number():
+    global next_num
+    while next_num in used_numbers:
+        next_num += 1
+    n = next_num
+    used_numbers.add(n)
+    next_num += 1
+    return n
+
+
+number_map = {}
+for g in guests:
+    if g["id"] in saved_numbers:
+        num = saved_numbers[g["id"]]
+    else:
+        num = alloc_number()
+    number_map[g["id"]] = num
+    g["num"] = num
+
+numbers_path.write_text(
+    json.dumps(number_map, indent=2, ensure_ascii=False) + "\n",
+    encoding="utf-8",
+)
+
+# Within each section, show guests in number order (stable)
+guests.sort(key=lambda g: (*table_group_key(g["section"]), g["num"]))
+
+# FIXED letter-hex codes
 saved_codes = {}
 if codes_path.exists():
     try:
@@ -238,42 +315,41 @@ for g in guests:
         code = alloc_letter_hex()
     code_map[g["id"]] = code
     g["code"] = code
-    g["param"] = f"guest_{code}"  # guest_0xacf
-    g["token"] = f"{g['param']}={g['id']}"  # guest_0xacf=udara-kavinda
+    g["param"] = f"guest_{code}"
+    g["token"] = f"{g['param']}={g['id']}"
 
 codes_path.write_text(
     json.dumps(code_map, indent=2, ensure_ascii=False) + "\n",
     encoding="utf-8",
 )
 
-# Rewrite guests-test.txt: numbered + section banners (Unassigned = no table yet)
 out_lines = [
     "# Format: 1. Guest Name | TableCode",
-    "# Codes: C = Couple, R = Reserved, 1–18 = guest tables, NA = Not attending but invite, END = add at end",
-    "# No table yet: omit | or use | _   (listed under Unassigned)",
-    "# Save this file while watch-guests.py is running to auto-update guests.js",
+    "# Codes: C = Couple, R = Reserved, 1–18 = guest tables",
+    "# NA = Not attending but invite | END = Additional (RSVP Nov 30) | END:6 = Additional + Table 6",
+    "# List numbers are FIXED (guest-numbers.json). Do not renumber by hand.",
+    "# Save this file, then run: python _sync_guests.py",
     "",
 ]
 _SENTINEL = object()
-current_table = _SENTINEL
-for i, g in enumerate(guests, 1):
-    if g["table"] != current_table:
-        if current_table is not _SENTINEL:
+current_section = _SENTINEL
+for g in guests:
+    if g["section"] != current_section:
+        if current_section is not _SENTINEL:
             out_lines.append("")
-        out_lines.append(f"------------------ {section_label(g['table'])} ------------------")
-        current_table = g["table"]
-    if g["table"] is None:
-        out_lines.append(f"{i}. {g['name']}")
+        out_lines.append(f"------------------ {section_label(g['section'])} ------------------")
+        current_section = g["section"]
+    tag = file_table_tag(g["section"], g["seat"])
+    if tag is None:
+        out_lines.append(f"{g['num']}. {g['name']}")
     else:
-        out_lines.append(f"{i}. {g['name']} | {g['table']}")
+        out_lines.append(f"{g['num']}. {g['name']} | {tag}")
 (root / "guests-test.txt").write_text("\n".join(out_lines) + "\n", encoding="utf-8")
 
 guest_js_rows = []
 for g in guests:
-    # NA / END = invite only, no seating table on the site
-    table_js = "null" if g["table"] in (None, "NA", "END") else f'"{g["table"]}"'
-    # Additional (END) guests get a later RSVP deadline
-    if g["table"] == "END":
+    table_js = "null" if g["seat"] is None else f'"{g["seat"]}"'
+    if g["section"] == "END":
         guest_js_rows.append(
             f'  {{ id: "{g["id"]}", code: "{g["code"]}", name: "{g["name"]}", table: {table_js}, rsvpBy: "November 30, 2026" }}'
         )
@@ -286,7 +362,7 @@ for g in guests:
     f"""// Guest personalization — fixed letter-hex codes (a–f only, offset by n)
 // Link format: ?guest_0xacf=<slug>
 // Example: index.html?guest_0xacf=udara-kavinda
-// Codes live in guest-codes.json and stay fixed across syncs.
+// Codes + list numbers stay fixed across syncs.
 //
 // Auto-generated from guests-test.txt — edit that file, then sync/watch.
 
@@ -304,10 +380,10 @@ const RSVP_SCRIPT_URL =
     encoding="utf-8",
 )
 
-# Send-ready links (check then copy/paste to guests)
 link_lines = [
     "UDARA & SHAINY — INVITE LINKS TO SEND",
     "Format: guest_0x***=<guest-slug>  (letter-hex a–f only, fixed — does not change on re-sync)",
+    "List numbers are FIXED. Moving a guest between sections does NOT change their number or link.",
     f"Offset n = {HEX_OFFSET_N}  |  Example: ?guest_0xacf=udara-kavinda",
     "Check each link, then send the matching one to that guest.",
     "",
@@ -315,23 +391,25 @@ link_lines = [
     f"Total guests: {len(guests)}",
     "",
 ]
-current_table = _SENTINEL
-for i, g in enumerate(guests, 1):
-    if g["table"] != current_table:
-        if current_table is not _SENTINEL:
+current_section = _SENTINEL
+for g in guests:
+    if g["section"] != current_section:
+        if current_section is not _SENTINEL:
             link_lines.append("")
-        link_lines.append(f"================== {section_label(g['table']).upper()} ==================")
+        link_lines.append(f"================== {section_label(g['section']).upper()} ==================")
         link_lines.append("")
-        current_table = g["table"]
-    if g["table"] == "NA":
+        current_section = g["section"]
+    if g["section"] == "NA":
         seat = "Not attending but invite"
-    elif g["table"] == "END":
-        seat = "Table TBD"
-    elif g["table"]:
-        seat = f"Table {g['table']}"
+    elif g["seat"]:
+        seat = f"Table {g['seat']}"
+        if g["section"] == "END":
+            seat += " (Additional · RSVP by Nov 30)"
+    elif g["section"] == "END":
+        seat = "Additional · RSVP by Nov 30 · Table TBD"
     else:
         seat = "Table TBD"
-    link_lines.append(f"{i}. {g['name']}")
+    link_lines.append(f"{g['num']}. {g['name']}")
     link_lines.append(f"   Seat: {seat}")
     link_lines.append(f"   Code: {g['code']}")
     link_lines.append(f"   Slug: {g['id']}")
@@ -349,20 +427,11 @@ if gs_path.exists():
     )
     new_block = f"const INVITEES = [\n{invitees},\n];"
     gs2 = re.sub(r"const INVITEES = \[[\s\S]*?\];", new_block, gs, count=1)
-    # Keep header note accurate
-    gs2 = gs2.replace(
-        " * Guest ID = guest_0x*** (same as link param), e.g. guest_0x001",
-        " * Guest ID = guest_0x*** letter-hex (same as link param), e.g. guest_0xacf",
-    )
-    gs2 = gs2.replace(
-        " * Guest ID = slug-3hex (same as ?guest= in the link), e.g. udara-kavinda-a3f",
-        " * Guest ID = guest_0x*** letter-hex (same as link param), e.g. guest_0xacf",
-    )
     gs_path.write_text(gs2, encoding="utf-8")
 
-assigned = sum(1 for g in guests if g["table"] is not None)
+assigned = sum(1 for g in guests if g["seat"] is not None)
 print(
     f"Synced {len(guests)} guests "
-    f"({assigned} with table, {len(guests) - assigned} unassigned) "
-    f"+ letter-hex codes (offset n={HEX_OFFSET_N})"
+    f"({assigned} with table, {len(guests) - assigned} without seat) "
+    f"+ fixed numbers + letter-hex codes"
 )

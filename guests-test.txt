@@ -1,7 +1,8 @@
 # Format: 1. Guest Name | TableCode
-# Codes: C = Couple, R = Reserved, 1–18 = guest tables, NA = Not attending but invite, END = add at end
-# No table yet: omit | or use | _   (listed under Unassigned)
-# Save this file while watch-guests.py is running to auto-update guests.js
+# Codes: C = Couple, R = Reserved, 1–18 = guest tables
+# NA = Not attending but invite | END = Additional (RSVP Nov 30) | END:6 = Additional + Table 6
+# List numbers are FIXED (guest-numbers.json). Do not renumber by hand.
+# Save this file, then run: python _sync_guests.py
 
 ------------------ Couple ------------------
 1. Mr. Udara Kavinda | C
@@ -64,8 +65,6 @@
 48. Mr. Dhanuka Sankalpa | 6
 49. Mr. Santhushta Kariyawasam | 6
 50. Mr. Supun Dassanayake | 6
-51. Mr. Aruna Edirimanne | 6
-52. Mr. Lakshitha Konara | 6
 
 ------------------ Unassigned ------------------
 53. Dr. Sachith Nishshanka
@@ -151,4 +150,6 @@
 131. Ajith Kumara | NA
 
 ------------------ Additional ------------------
+51. Mr. Aruna Edirimanne | END:6
+52. Mr. Lakshitha Konara | END:6
 132. Mrs. Weranga Kaweesha | END

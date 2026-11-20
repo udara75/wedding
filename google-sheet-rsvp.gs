@@ -64,8 +64,6 @@ const INVITEES = [
   { id: "guest_0xccf", name: "Mr. Dhanuka Sankalpa" },
   { id: "guest_0xcda", name: "Mr. Santhushta Kariyawasam" },
   { id: "guest_0xcdb", name: "Mr. Supun Dassanayake" },
-  { id: "guest_0xcdc", name: "Mr. Aruna Edirimanne" },
-  { id: "guest_0xcdd", name: "Mr. Lakshitha Konara" },
   { id: "guest_0xcde", name: "Dr. Sachith Nishshanka" },
   { id: "guest_0xcdf", name: "Dr. P. Thushantha" },
   { id: "guest_0xcea", name: "Dr. Akila Rathnayaka & Mrs. Sarangie Anuththara" },
@@ -145,6 +143,8 @@ const INVITEES = [
   { id: "guest_0xeee", name: "Dr. Tharani Adhikari and Mr. Ishara Tharanga" },
   { id: "guest_0xdfd", name: "Lahiru Priyadarshana" },
   { id: "guest_0xeec", name: "Ajith Kumara" },
+  { id: "guest_0xcdc", name: "Mr. Aruna Edirimanne" },
+  { id: "guest_0xcdd", name: "Mr. Lakshitha Konara" },
   { id: "guest_0xeef", name: "Mrs. Weranga Kaweesha" },
 ];
 

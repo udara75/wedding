@@ -1,7 +1,7 @@
 // Guest personalization — fixed letter-hex codes (a–f only, offset by n)
 // Link format: ?guest_0xacf=<slug>
 // Example: index.html?guest_0xacf=udara-kavinda
-// Codes live in guest-codes.json and stay fixed across syncs.
+// Codes + list numbers stay fixed across syncs.
 //
 // Auto-generated from guests-test.txt — edit that file, then sync/watch.
 
@@ -56,8 +56,6 @@ const GUESTS = [
   { id: "dhanuka-sankalpa", code: "0xccf", name: "Mr. Dhanuka Sankalpa", table: "6" },
   { id: "santhushta-kariyawasam", code: "0xcda", name: "Mr. Santhushta Kariyawasam", table: "6" },
   { id: "supun-dassanayake", code: "0xcdb", name: "Mr. Supun Dassanayake", table: "6" },
-  { id: "aruna-edirimanne", code: "0xcdc", name: "Mr. Aruna Edirimanne", table: "6" },
-  { id: "lakshitha-konara", code: "0xcdd", name: "Mr. Lakshitha Konara", table: "6" },
   { id: "sachith-nishshanka", code: "0xcde", name: "Dr. Sachith Nishshanka", table: null },
   { id: "p-thushantha", code: "0xcdf", name: "Dr. P. Thushantha", table: null },
   { id: "akila-rathnayaka-mrs-sarangie-anuththara", code: "0xcea", name: "Dr. Akila Rathnayaka & Mrs. Sarangie Anuththara", table: null },
@@ -137,6 +135,8 @@ const GUESTS = [
   { id: "tharani-adhikari-and-mr-ishara-tharanga", code: "0xeee", name: "Dr. Tharani Adhikari and Mr. Ishara Tharanga", table: null },
   { id: "lahiru-priyadarshana", code: "0xdfd", name: "Lahiru Priyadarshana", table: null },
   { id: "ajith-kumara", code: "0xeec", name: "Ajith Kumara", table: null },
+  { id: "aruna-edirimanne", code: "0xcdc", name: "Mr. Aruna Edirimanne", table: "6", rsvpBy: "November 30, 2026" },
+  { id: "lakshitha-konara", code: "0xcdd", name: "Mr. Lakshitha Konara", table: "6", rsvpBy: "November 30, 2026" },
   { id: "weranga-kaweesha", code: "0xeef", name: "Mrs. Weranga Kaweesha", table: null, rsvpBy: "November 30, 2026" },
 ];
 

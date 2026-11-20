@@ -1,5 +1,6 @@
 UDARA & SHAINY — INVITE LINKS TO SEND
 Format: guest_0x***=<guest-slug>  (letter-hex a–f only, fixed — does not change on re-sync)
+List numbers are FIXED. Moving a guest between sections does NOT change their number or link.
 Offset n = 42  |  Example: ?guest_0xacf=udara-kavinda
 Check each link, then send the matching one to that guest.
 
@@ -371,20 +372,6 @@ Total guests: 132
    Code: 0xcdb
    Slug: supun-dassanayake
    Link: https://udara75.github.io/wedding/?guest_0xcdb=supun-dassanayake
-   [ ] Checked   [ ] Sent
-
-51. Mr. Aruna Edirimanne
-   Seat: Table 6
-   Code: 0xcdc
-   Slug: aruna-edirimanne
-   Link: https://udara75.github.io/wedding/?guest_0xcdc=aruna-edirimanne
-   [ ] Checked   [ ] Sent
-
-52. Mr. Lakshitha Konara
-   Seat: Table 6
-   Code: 0xcdd
-   Slug: lakshitha-konara
-   Link: https://udara75.github.io/wedding/?guest_0xcdd=lakshitha-konara
    [ ] Checked   [ ] Sent
 
 
@@ -949,8 +936,22 @@ Total guests: 132
 
 ================== ADDITIONAL ==================
 
+51. Mr. Aruna Edirimanne
+   Seat: Table 6 (Additional · RSVP by Nov 30)
+   Code: 0xcdc
+   Slug: aruna-edirimanne
+   Link: https://udara75.github.io/wedding/?guest_0xcdc=aruna-edirimanne
+   [ ] Checked   [ ] Sent
+
+52. Mr. Lakshitha Konara
+   Seat: Table 6 (Additional · RSVP by Nov 30)
+   Code: 0xcdd
+   Slug: lakshitha-konara
+   Link: https://udara75.github.io/wedding/?guest_0xcdd=lakshitha-konara
+   [ ] Checked   [ ] Sent
+
 132. Mrs. Weranga Kaweesha
-   Seat: Table TBD
+   Seat: Additional · RSVP by Nov 30 · Table TBD
    Code: 0xeef
    Slug: weranga-kaweesha
    Link: https://udara75.github.io/wedding/?guest_0xeef=weranga-kaweesha
