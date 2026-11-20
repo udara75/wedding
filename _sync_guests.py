@@ -120,16 +120,46 @@ def is_separator(line: str) -> bool:
     return bool(re.match(r"^-{3,}", line.strip()))
 
 
+def normalize_rsvp_by(raw):
+    """Optional custom RSVP deadline text, e.g. Dec 1 → December 1, 2026."""
+    if raw is None:
+        return None
+    s = re.sub(r"\s+", " ", str(raw)).strip()
+    if not s or s in {"_", "-", ""}:
+        return None
+    key = s.lower().replace(",", "").replace(".", "")
+    aliases = {
+        "dec 1": "December 1, 2026",
+        "dec 01": "December 1, 2026",
+        "december 1": "December 1, 2026",
+        "december 1 2026": "December 1, 2026",
+        "1 dec": "December 1, 2026",
+        "1 december": "December 1, 2026",
+        "nov 30": "November 30, 2026",
+        "november 30": "November 30, 2026",
+        "november 30 2026": "November 30, 2026",
+        "nov 20": "November 20, 2026",
+        "november 20": "November 20, 2026",
+        "november 20 2026": "November 20, 2026",
+    }
+    if key in aliases:
+        return aliases[key]
+    return s
+
+
 def parse_line(line: str):
     line = line.strip()
     if not line or line.startswith("#") or is_separator(line):
         return None
 
-    section, seat = None, None
+    section, seat, rsvp_by = None, None, None
     if "|" in line:
-        name_part, table_part = line.split("|", 1)
-        section, seat = parse_assignment(table_part)
-        name_part = name_part.strip()
+        parts = [p.strip() for p in line.split("|")]
+        name_part = parts[0]
+        if len(parts) > 1:
+            section, seat = parse_assignment(parts[1])
+        if len(parts) > 2:
+            rsvp_by = normalize_rsvp_by(parts[2])
     else:
         name_part = line
 
@@ -144,7 +174,7 @@ def parse_line(line: str):
     if not name_part:
         return None
 
-    return fix_title(name_part), section, seat, file_num
+    return fix_title(name_part), section, seat, file_num, rsvp_by
 
 
 def section_label(section):
@@ -198,7 +228,7 @@ for i, line in enumerate(lines):
     parsed = parse_line(line)
     if not parsed:
         continue
-    name, section, seat, file_num = parsed
+    name, section, seat, file_num, rsvp_by = parsed
     name_key = re.sub(r"\s+", " ", name).strip().lower()
     if name_key in seen_names:
         continue
@@ -210,6 +240,9 @@ for i, line in enumerate(lines):
     if gid in seen_ids:
         gid = f"{gid}-{i + 1}"
     seen_ids[gid] = True
+    # Additional (END) default RSVP Nov 30 unless a custom date was set
+    if rsvp_by is None and section == "END":
+        rsvp_by = "November 30, 2026"
     guests.append(
         {
             "id": gid,
@@ -217,6 +250,7 @@ for i, line in enumerate(lines):
             "section": section,
             "seat": seat,
             "file_num": file_num,
+            "rsvp_by": rsvp_by,
         }
     )
 
@@ -325,6 +359,7 @@ codes_path.write_text(
 
 out_lines = [
     "# Format: 1. Guest Name | TableCode",
+    "# Optional RSVP date: 51. Name | 6 | December 1, 2026",
     "# Codes: C = Couple, R = Reserved, 1–18 = guest tables",
     "# NA = Not attending but invite | END = Additional (RSVP Nov 30) | END:6 = Additional + Table 6",
     "# List numbers are FIXED (guest-numbers.json). Do not renumber by hand.",
@@ -340,8 +375,16 @@ for g in guests:
         out_lines.append(f"------------------ {section_label(g['section'])} ------------------")
         current_section = g["section"]
     tag = file_table_tag(g["section"], g["seat"])
-    if tag is None:
+    # Don't rewrite END's default Nov 30 into the file (it's implied)
+    rsvp_out = g.get("rsvp_by")
+    if rsvp_out == "November 30, 2026" and g["section"] == "END":
+        rsvp_out = None
+    if tag is None and not rsvp_out:
         out_lines.append(f"{g['num']}. {g['name']}")
+    elif tag is None and rsvp_out:
+        out_lines.append(f"{g['num']}. {g['name']} | _ | {rsvp_out}")
+    elif rsvp_out:
+        out_lines.append(f"{g['num']}. {g['name']} | {tag} | {rsvp_out}")
     else:
         out_lines.append(f"{g['num']}. {g['name']} | {tag}")
 (root / "guests-test.txt").write_text("\n".join(out_lines) + "\n", encoding="utf-8")
@@ -349,9 +392,9 @@ for g in guests:
 guest_js_rows = []
 for g in guests:
     table_js = "null" if g["seat"] is None else f'"{g["seat"]}"'
-    if g["section"] == "END":
+    if g.get("rsvp_by"):
         guest_js_rows.append(
-            f'  {{ id: "{g["id"]}", code: "{g["code"]}", name: "{g["name"]}", table: {table_js}, rsvpBy: "November 30, 2026" }}'
+            f'  {{ id: "{g["id"]}", code: "{g["code"]}", name: "{g["name"]}", table: {table_js}, rsvpBy: "{g["rsvp_by"]}" }}'
         )
     else:
         guest_js_rows.append(

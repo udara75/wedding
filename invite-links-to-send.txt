@@ -374,6 +374,20 @@ Total guests: 132
    Link: https://udara75.github.io/wedding/?guest_0xcdb=supun-dassanayake
    [ ] Checked   [ ] Sent
 
+51. Mr. Aruna Edirimanne
+   Seat: Table 6
+   Code: 0xcdc
+   Slug: aruna-edirimanne
+   Link: https://udara75.github.io/wedding/?guest_0xcdc=aruna-edirimanne
+   [ ] Checked   [ ] Sent
+
+52. Mr. Lakshitha Konara
+   Seat: Table 6
+   Code: 0xcdd
+   Slug: lakshitha-konara
+   Link: https://udara75.github.io/wedding/?guest_0xcdd=lakshitha-konara
+   [ ] Checked   [ ] Sent
+
 
 ================== UNASSIGNED ==================
 
@@ -935,20 +949,6 @@ Total guests: 132
 
 
 ================== ADDITIONAL ==================
-
-51. Mr. Aruna Edirimanne
-   Seat: Table 6 (Additional · RSVP by Nov 30)
-   Code: 0xcdc
-   Slug: aruna-edirimanne
-   Link: https://udara75.github.io/wedding/?guest_0xcdc=aruna-edirimanne
-   [ ] Checked   [ ] Sent
-
-52. Mr. Lakshitha Konara
-   Seat: Table 6 (Additional · RSVP by Nov 30)
-   Code: 0xcdd
-   Slug: lakshitha-konara
-   Link: https://udara75.github.io/wedding/?guest_0xcdd=lakshitha-konara
-   [ ] Checked   [ ] Sent
 
 132. Mrs. Weranga Kaweesha
    Seat: Additional · RSVP by Nov 30 · Table TBD
