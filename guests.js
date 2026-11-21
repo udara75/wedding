@@ -15,7 +15,7 @@ const GUESTS = [
   { id: "manjula-prabhath", code: "0xbca", name: "Mr. Manjula Prabhath", table: "2" },
   { id: "ruwan-nandana", code: "0xbcb", name: "Mr. & Mrs. Ruwan Nandana", table: "3" },
   { id: "chalindu-sankalpa", code: "0xbcc", name: "Mr. & Mrs. Chalindu Sankalpa", table: "3" },
-  { id: "madawa-dilshan", code: "0xbcd", name: "Mr. Madawa Dilshan", table: "3" },
+  { id: "madawa-dilshan", code: "0xbcd", name: "Mr. & Mrs. Madawa Dilshan", table: "3" },
   { id: "lahiru-chamara", code: "0xbce", name: "Mr. Lahiru Chamara", table: "3" },
   { id: "udari-pabodini", code: "0xbcf", name: "Mrs. Udari Pabodini", table: "3" },
   { id: "naveen-wickramathunga", code: "0xbda", name: "Mr. Naveen Wickramathunga", table: "3" },
